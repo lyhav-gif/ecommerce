@@ -3,24 +3,16 @@ import 'package:mongo_dart/mongo_dart.dart';
 typedef Payment = PaymentRecord;
 
 class PaymentRecord {
-  static String buildQrImageUrl(String qr) {
-    return 'https://api.qrserver.com/v1/create-qr-code/?size=500x500&margin=2&ecc=M&data=${Uri.encodeComponent(qr)}';
-  }
-
-  static String buildQrImageFallbackUrl(String qr) {
-    return 'https://quickchart.io/qr?size=500&margin=2&ecLevel=M&text=${Uri.encodeComponent(qr)}';
-  }
-
   PaymentRecord({
-    this.id,
     required this.md5,
     required this.qr,
-    String? qrImageUrl,
-    String? qrImageUrlFallback,
     required this.amount,
     required this.currency,
     required this.bakongAccountId,
     required this.merchantName,
+    this.id,
+    String? qrImageUrl,
+    String? qrImageUrlFallback,
     this.billNumber = '',
     this.status = 'PENDING',
     this.productId,
@@ -30,16 +22,16 @@ class PaymentRecord {
     this.metadata,
     DateTime? createdAt,
     DateTime? updatedAt,
-  })  : qrImageUrl = qrImageUrl ?? buildQrImageUrl(qr),
-        qrImageUrlFallback = qrImageUrlFallback ?? buildQrImageFallbackUrl(qr),
-        createdAt = createdAt ?? DateTime.now(),
-        updatedAt = updatedAt ?? DateTime.now();
+  }) : qrImageUrl = qrImageUrl ?? buildQrImageUrl(qr),
+       qrImageUrlFallback = qrImageUrlFallback ?? buildQrImageFallbackUrl(qr),
+       createdAt = createdAt ?? DateTime.now(),
+       updatedAt = updatedAt ?? DateTime.now();
 
   factory PaymentRecord.fromMap(Map<String, dynamic> map) {
     String? idStr;
     if (map['_id'] != null) {
       if (map['_id'] is ObjectId) {
-        idStr = (map['_id'] as ObjectId).toHexString();
+        idStr = (map['_id'] as ObjectId).oid;
       } else {
         idStr = map['_id'].toString();
       }
@@ -66,17 +58,26 @@ class PaymentRecord {
       transactionHash: map['transactionHash'] as String?,
       paidAt: map['paidAt'] != null
           ? (map['paidAt'] is DateTime
-              ? map['paidAt'] as DateTime
-              : DateTime.tryParse(map['paidAt'].toString()))
+                ? map['paidAt'] as DateTime
+                : DateTime.tryParse(map['paidAt'].toString()))
           : null,
       metadata: map['metadata'] as Map<String, dynamic>?,
       createdAt: map['createdAt'] is DateTime
           ? map['createdAt'] as DateTime
-          : DateTime.tryParse(map['createdAt']?.toString() ?? '') ?? DateTime.now(),
+          : DateTime.tryParse(map['createdAt']?.toString() ?? '') ??
+                DateTime.now(),
       updatedAt: map['updatedAt'] is DateTime
           ? map['updatedAt'] as DateTime
-          : DateTime.tryParse(map['updatedAt']?.toString() ?? '') ?? DateTime.now(),
+          : DateTime.tryParse(map['updatedAt']?.toString() ?? '') ??
+                DateTime.now(),
     );
+  }
+  static String buildQrImageUrl(String qr) {
+    return 'https://api.qrserver.com/v1/create-qr-code/?size=500x500&margin=2&ecc=M&data=${Uri.encodeComponent(qr)}';
+  }
+
+  static String buildQrImageFallbackUrl(String qr) {
+    return 'https://quickchart.io/qr?size=500&margin=2&ecLevel=M&text=${Uri.encodeComponent(qr)}';
   }
 
   final String? id;

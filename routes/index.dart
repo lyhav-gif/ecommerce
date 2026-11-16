@@ -42,25 +42,31 @@ Future<Response> onRequest(RequestContext context) async {
           'apply_promo': 'POST /api/v1/cart/promo',
         },
         'orders': {
-          'buy_now': 'POST /api/v1/orders/buy-now (Instant Purchase + KHQR/COD)',
+          'buy_now':
+              'POST /api/v1/orders/buy-now (Instant Purchase + KHQR/COD)',
           'checkout': 'POST /api/v1/orders/checkout (Cart Checkout + KHQR/COD)',
           'list_orders': 'GET /api/v1/orders',
           'order_detail': 'GET /api/v1/orders/[id]',
         },
         'products': {
-          'list_or_create': 'POST /api/v1/products | GET /api/v1/products?category=Beauty',
+          'list_or_create':
+              'POST /api/v1/products | GET /api/v1/products?category=Beauty',
           'seed_figma': 'POST /api/v1/products/seed',
-          'item_operations': 'GET /api/v1/products/[id] | PUT /api/v1/products/[id] | DELETE /api/v1/products/[id]',
+          'item_operations':
+              'GET /api/v1/products/[id] | PUT /api/v1/products/[id] | DELETE /api/v1/products/[id]',
         },
         'payments': {
-          'buy_or_checkout': 'POST /api/v1/payments (Buy product, checkout cart, or custom KHQR)',
+          'buy_or_checkout':
+              'POST /api/v1/payments (Buy product, checkout cart, or custom KHQR)',
           'generate_khqr': 'POST /api/v1/payments/generate',
-          'verify_transaction': 'POST /api/v1/payments/verify or GET /api/v1/payments/verify?md5={md5}',
+          'verify_transaction':
+              'POST /api/v1/payments/verify or GET /api/v1/payments/verify?md5={md5}',
           'list_payments': 'GET /api/v1/payments',
           'payment_detail': 'GET /api/v1/payments/[md5]',
         },
         'screens_testing': {
-          'interactive_ui': 'GET /screens (Interactive Figma App simulator for testing)',
+          'interactive_ui':
+              'GET /screens (Interactive Figma App simulator for testing)',
           'khqr_scanner': 'GET /qr (Bakong KHQR test card)',
         },
       },

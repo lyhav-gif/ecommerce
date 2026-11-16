@@ -12,10 +12,10 @@ class PaymentController {
     required AuthService authService,
     required OrderService orderService,
     required CartService cartService,
-  })  : _paymentService = paymentService,
-        _authService = authService,
-        _orderService = orderService,
-        _cartService = cartService;
+  }) : _paymentService = paymentService,
+       _authService = authService,
+       _orderService = orderService,
+       _cartService = cartService;
 
   final PaymentService _paymentService;
   final AuthService _authService;
@@ -26,7 +26,8 @@ class PaymentController {
     RequestContext context, {
     Map<String, dynamic>? bodyJson,
   }) async {
-    final authHeader = context.request.headers['authorization'] ??
+    final authHeader =
+        context.request.headers['authorization'] ??
         context.request.headers['Authorization'];
     if (authHeader != null && authHeader.startsWith('Bearer ')) {
       final token = authHeader.substring(7).trim();
@@ -39,7 +40,9 @@ class PaymentController {
     }
 
     final headerToken = context.request.headers['x-auth-token'];
-    if (headerToken != null && headerToken.isNotEmpty && !headerToken.startsWith('{{')) {
+    if (headerToken != null &&
+        headerToken.isNotEmpty &&
+        !headerToken.startsWith('{{')) {
       try {
         final user = await _authService.getUserFromToken(headerToken);
         if (user?.id != null) return user!.id!;
@@ -63,7 +66,7 @@ class PaymentController {
   Future<Response> generate(RequestContext context) async {
     try {
       final body = await context.request.body();
-      Map<String, dynamic> json = {};
+      var json = <String, dynamic>{};
       if (body.isNotEmpty) {
         json = jsonDecode(body) as Map<String, dynamic>;
       }
@@ -92,8 +95,9 @@ class PaymentController {
           promoCode: promoCode,
         );
 
-        final paymentDoc =
-            await _paymentService.getPaymentByMd5(order.md5 ?? '');
+        final paymentDoc = await _paymentService.getPaymentByMd5(
+          order.md5 ?? '',
+        );
 
         return Response.json(
           statusCode: HttpStatus.created,
@@ -129,7 +133,8 @@ class PaymentController {
       final hasCartItems =
           userCart.items.isNotEmpty || guestCart.items.isNotEmpty;
 
-      final isCartCheckout = fromCart ||
+      final isCartCheckout =
+          fromCart ||
           hasCartItems ||
           (productId == null &&
               orderId == null &&
@@ -143,8 +148,9 @@ class PaymentController {
           promoCode: promoCode,
         );
 
-        final paymentDoc =
-            await _paymentService.getPaymentByMd5(order.md5 ?? '');
+        final paymentDoc = await _paymentService.getPaymentByMd5(
+          order.md5 ?? '',
+        );
 
         return Response.json(
           statusCode: HttpStatus.created,
@@ -231,13 +237,16 @@ class PaymentController {
         body: {
           'success': false,
           'error':
-              'Please provide productId (e.g. "Aura Cream 1+1" or "Linin Body Cream"), amount, or fromCart: true'
+              'Please provide productId (e.g. "Aura Cream 1+1" or "Linin Body Cream"), amount, or fromCart: true',
         },
       );
     } catch (e) {
       return Response.json(
         statusCode: HttpStatus.badRequest,
-        body: {'success': false, 'error': e.toString().replaceAll('Exception: ', '')},
+        body: {
+          'success': false,
+          'error': e.toString().replaceAll('Exception: ', ''),
+        },
       );
     }
   }
@@ -262,7 +271,10 @@ class PaymentController {
       if (md5 == null || md5.trim().isEmpty) {
         return Response.json(
           statusCode: HttpStatus.badRequest,
-          body: {'success': false, 'error': 'MD5 hash is required to verify payment'},
+          body: {
+            'success': false,
+            'error': 'MD5 hash is required to verify payment',
+          },
         );
       }
 
@@ -320,4 +332,3 @@ class PaymentController {
     }
   }
 }
-

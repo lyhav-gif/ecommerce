@@ -3,18 +3,19 @@ import 'package:mongo_dart/mongo_dart.dart';
 
 class Order {
   Order({
-    this.id,
     required this.orderNumber,
     required this.userId,
     required this.customerName,
     required this.customerEmail,
     required this.items,
     required this.subtotal,
+    required this.totalAmount,
+    this.id,
     this.shippingFee = 0.0,
     this.discount = 0.0,
-    required this.totalAmount,
     this.currency = 'USD',
-    this.paymentMethod = 'digital_payment', // 'digital_payment' or 'cash_on_delivery'
+    this.paymentMethod =
+        'digital_payment', // 'digital_payment' or 'cash_on_delivery'
     this.paymentStatus = 'PENDING', // 'PENDING', 'PAID', 'COD_PENDING'
     this.orderStatus = 'PLACED',
     this.deliveryAddress = 'Street 2004, Phnom Penh, Cambodia',
@@ -24,14 +25,14 @@ class Order {
     this.qrImageUrlFallback,
     DateTime? createdAt,
     DateTime? updatedAt,
-  })  : createdAt = createdAt ?? DateTime.now(),
-        updatedAt = updatedAt ?? DateTime.now();
+  }) : createdAt = createdAt ?? DateTime.now(),
+       updatedAt = updatedAt ?? DateTime.now();
 
   factory Order.fromMap(Map<String, dynamic> map) {
     String? idStr;
     if (map['_id'] != null) {
       if (map['_id'] is ObjectId) {
-        idStr = (map['_id'] as ObjectId).toHexString();
+        idStr = (map['_id'] as ObjectId).oid;
       } else {
         idStr = map['_id'].toString();
       }
@@ -69,15 +70,16 @@ class Order {
       khqr: khqrStr,
       md5: map['md5'] as String?,
       qrImageUrl: map['qrImageUrl'] as String? ?? defaultQrUrl,
-      qrImageUrlFallback: map['qrImageUrlFallback'] as String? ?? defaultFallback,
+      qrImageUrlFallback:
+          map['qrImageUrlFallback'] as String? ?? defaultFallback,
       createdAt: map['createdAt'] is DateTime
           ? map['createdAt'] as DateTime
           : DateTime.tryParse(map['createdAt']?.toString() ?? '') ??
-              DateTime.now(),
+                DateTime.now(),
       updatedAt: map['updatedAt'] is DateTime
           ? map['updatedAt'] as DateTime
           : DateTime.tryParse(map['updatedAt']?.toString() ?? '') ??
-              DateTime.now(),
+                DateTime.now(),
     );
   }
 
@@ -160,4 +162,3 @@ class Order {
     };
   }
 }
-

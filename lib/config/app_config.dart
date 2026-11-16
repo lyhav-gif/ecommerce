@@ -24,7 +24,6 @@ class AppConfig {
 
   static AppConfig? _instance;
 
-
   final String appName;
   final String appEnv;
   final int appPort;
@@ -91,10 +90,19 @@ class AppConfig {
       mongodbUri: getVar('MONGODB_URI', fallback: 'mongodb://127.0.0.1:27017'),
       mongodbDatabase: getVar('MONGODB_DATABASE', fallback: 'api'),
       bakongEnv: getVar('BAKONG_ENV', fallback: 'sandbox'),
-      bakongApiUrl: getVar('BAKONG_API_URL', fallback: 'https://api-bakong.nbc.gov.kh'),
-      bakongToken: getVar('BAKONG_TOKEN', fallback: ''),
-      bakongAccountId: getVar('BAKONG_ACCOUNT_ID', fallback: 'lyhav_voeurn@bkrt'),
-      bakongMerchantName: getVar('BAKONG_MERCHANT_NAME', fallback: 'LYHAV VOEURN'),
+      bakongApiUrl: getVar(
+        'BAKONG_API_URL',
+        fallback: 'https://api-bakong.nbc.gov.kh',
+      ),
+      bakongToken: getVar('BAKONG_TOKEN'),
+      bakongAccountId: getVar(
+        'BAKONG_ACCOUNT_ID',
+        fallback: 'lyhav_voeurn@bkrt',
+      ),
+      bakongMerchantName: getVar(
+        'BAKONG_MERCHANT_NAME',
+        fallback: 'LYHAV VOEURN',
+      ),
       bakongPhoneNumber: getVar('BAKONG_PHONE_NUMBER', fallback: '067687806'),
       khqrCurrency: getVar('KHQR_CURRENCY', fallback: 'KHR'),
       khqrCountry: getVar('KHQR_COUNTRY', fallback: 'KH'),
@@ -105,7 +113,7 @@ class AppConfig {
       ),
       jwtExpiresInSeconds:
           int.tryParse(getVar('JWT_EXPIRES_IN', fallback: '2592000')) ??
-              2592000,
+          2592000,
     );
 
     return _instance!;
@@ -127,4 +135,3 @@ class AppConfig {
     };
   }
 }
-

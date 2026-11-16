@@ -5,7 +5,8 @@ import 'package:dart_frog/dart_frog.dart';
 Response onRequest(RequestContext context) {
   final config = context.read<AppConfig>();
 
-  final html = '''
+  final html =
+      '''
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -161,4 +162,3 @@ Response onRequest(RequestContext context) {
     },
   );
 }
-

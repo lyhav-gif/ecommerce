@@ -45,7 +45,6 @@ class PaymentService {
       bakongAccountId: generated.bakongAccountId,
       merchantName: generated.merchantName,
       billNumber: generatedBillNumber,
-      status: 'PENDING',
       productId: productId,
       orderId: orderId,
       metadata: metadata,
@@ -53,9 +52,8 @@ class PaymentService {
 
     final map = payment.toMap(includeId: false);
     final res = await _database.payments.insertOne(map);
-    final insertedId = res.id is ObjectId
-        ? (res.id as ObjectId).toHexString()
-        : res.id?.toString();
+    final insertedId =
+        res.id is ObjectId ? (res.id as ObjectId).oid : res.id?.toString();
 
     return PaymentRecord.fromMap({
       ...map,
@@ -67,7 +65,7 @@ class PaymentService {
     await _database.connect();
 
     final doc = await _database.payments.findOne(where.eq('md5', md5.trim()));
-    PaymentRecord? payment = doc != null ? PaymentRecord.fromMap(doc) : null;
+    var payment = doc != null ? PaymentRecord.fromMap(doc) : null;
 
     final bakongRes = await _bakongService.checkTransactionByMd5(md5);
 
@@ -139,7 +137,9 @@ class PaymentService {
   }) async {
     await _database.connect();
 
-    final existing = await _database.payments.findOne(where.eq('md5', md5.trim()));
+    final existing = await _database.payments.findOne(
+      where.eq('md5', md5.trim()),
+    );
     if (existing != null) {
       return PaymentRecord.fromMap(existing);
     }
@@ -148,19 +148,17 @@ class PaymentService {
       md5: md5,
       qr: qr,
       qrImageUrl: qrImageUrl,
-      amount: 0.0,
+      amount: 0,
       currency: currency,
       bakongAccountId: _bakongService.config.bakongAccountId,
       merchantName: _bakongService.config.bakongMerchantName,
       billNumber: 'STATIC-$currency',
-      status: 'PENDING',
     );
 
     final map = payment.toMap(includeId: false);
     final res = await _database.payments.insertOne(map);
-    final insertedId = res.id is ObjectId
-        ? (res.id as ObjectId).toHexString()
-        : res.id?.toString();
+    final insertedId =
+        res.id is ObjectId ? (res.id as ObjectId).oid : res.id?.toString();
 
     return PaymentRecord.fromMap({
       ...map,

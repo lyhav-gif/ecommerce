@@ -8,4 +8,3 @@ Future<Response> onRequest(RequestContext context) async {
   }
   return Response(statusCode: HttpStatus.methodNotAllowed);
 }
-

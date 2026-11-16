@@ -21,13 +21,13 @@ class BakongQrResult {
   final String merchantName;
 
   Map<String, dynamic> toJson() => {
-        'qr': qr,
-        'md5': md5,
-        'amount': amount,
-        'currency': currency,
-        'bakongAccountId': bakongAccountId,
-        'merchantName': merchantName,
-      };
+    'qr': qr,
+    'md5': md5,
+    'amount': amount,
+    'currency': currency,
+    'bakongAccountId': bakongAccountId,
+    'merchantName': merchantName,
+  };
 }
 
 class BakongTransactionResult {
@@ -46,11 +46,11 @@ class BakongTransactionResult {
   final Map<String, dynamic>? rawResponse;
 
   Map<String, dynamic> toJson() => {
-        'isSuccess': isSuccess,
-        'responseCode': responseCode,
-        'responseMessage': responseMessage,
-        if (data != null) 'data': data,
-      };
+    'isSuccess': isSuccess,
+    'responseCode': responseCode,
+    'responseMessage': responseMessage,
+    if (data != null) 'data': data,
+  };
 }
 
 class BakongService {
@@ -146,8 +146,8 @@ class BakongService {
 
       final json = jsonDecode(responseBody) as Map<String, dynamic>;
 
-      int code = -1;
-      String message = 'Unknown';
+      var code = -1;
+      var message = 'Unknown';
       Map<String, dynamic>? data;
 
       if (json['status'] is Map) {
@@ -208,7 +208,7 @@ class BakongService {
       return jsonDecode(responseBody) as Map<String, dynamic>;
     } catch (e) {
       return {
-        'status': {'code': -1, 'message': e.toString()}
+        'status': {'code': -1, 'message': e.toString()},
       };
     } finally {
       client.close();

@@ -19,9 +19,8 @@ class CartService {
     final newCart = Cart(userId: userId, items: []);
     final map = newCart.toMap(includeId: false);
     final res = await _database.carts.insertOne(map);
-    final insertedId = res.id is ObjectId
-        ? (res.id as ObjectId).toHexString()
-        : res.id?.toString();
+    final insertedId =
+        res.id is ObjectId ? (res.id as ObjectId).oid : res.id?.toString();
 
     return Cart.fromMap({
       ...map,
@@ -77,7 +76,6 @@ class CartService {
       items: items,
       promoCode: cart.promoCode,
       discount: cart.discount,
-      shippingFee: 0.0,
       updatedAt: DateTime.now(),
     );
 
@@ -115,7 +113,6 @@ class CartService {
       items: items,
       promoCode: cart.promoCode,
       discount: cart.discount,
-      shippingFee: 0.0,
       updatedAt: DateTime.now(),
     );
 
@@ -135,9 +132,6 @@ class CartService {
       id: cart.id,
       userId: userId,
       items: [],
-      promoCode: null,
-      discount: 0.0,
-      shippingFee: 0.0,
       updatedAt: DateTime.now(),
     );
 
@@ -149,7 +143,7 @@ class CartService {
     await _database.connect();
     final cart = await getCart(userId);
 
-    double discount = 0.0;
+    double discount = 0;
     final normalized = promoCode.trim().toUpperCase();
 
     if (normalized == 'DISCOUNT10' || normalized == 'PROMO10') {
@@ -166,7 +160,6 @@ class CartService {
       items: cart.items,
       promoCode: normalized,
       discount: discount,
-      shippingFee: 0.0,
       updatedAt: DateTime.now(),
     );
 
@@ -225,4 +218,3 @@ class CartService {
     return doc5;
   }
 }
-

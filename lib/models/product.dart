@@ -1,19 +1,11 @@
 import 'package:mongo_dart/mongo_dart.dart';
 
 class Product {
-  static String buildQrImageUrl(String qr) {
-    return 'https://api.qrserver.com/v1/create-qr-code/?size=500x500&margin=2&ecc=M&data=${Uri.encodeComponent(qr)}';
-  }
-
-  static String buildQrImageFallbackUrl(String qr) {
-    return 'https://quickchart.io/qr?size=500&margin=2&ecLevel=M&text=${Uri.encodeComponent(qr)}';
-  }
-
   Product({
-    this.id,
     required this.name,
-    this.description = '',
     required this.price,
+    this.id,
+    this.description = '',
     this.currency = 'USD',
     this.imageUrl = '',
     this.category = 'Beauty',
@@ -25,20 +17,28 @@ class Product {
     this.isFlash = false,
     this.khqr,
     this.md5,
-    this.qrImageUrl,
-    this.qrImageUrlFallback,
+    String? qrImageUrl,
+    String? qrImageUrlFallback,
     this.bakongAccountId,
     this.merchantName,
     DateTime? createdAt,
     DateTime? updatedAt,
-  })  : createdAt = createdAt ?? DateTime.now(),
-        updatedAt = updatedAt ?? DateTime.now();
+  }) : qrImageUrl =
+           qrImageUrl ??
+           (khqr != null && khqr.isNotEmpty ? buildQrImageUrl(khqr) : null),
+       qrImageUrlFallback =
+           qrImageUrlFallback ??
+           (khqr != null && khqr.isNotEmpty
+               ? buildQrImageFallbackUrl(khqr)
+               : null),
+       createdAt = createdAt ?? DateTime.now(),
+       updatedAt = updatedAt ?? DateTime.now();
 
   factory Product.fromMap(Map<String, dynamic> map) {
     String? idStr;
     if (map['_id'] != null) {
       if (map['_id'] is ObjectId) {
-        idStr = (map['_id'] as ObjectId).toHexString();
+        idStr = (map['_id'] as ObjectId).oid;
       } else {
         idStr = map['_id'].toString();
       }
@@ -64,20 +64,32 @@ class Product {
       isFlash: map['isFlash'] as bool? ?? false,
       khqr: rawQr,
       md5: map['md5'] as String?,
-      qrImageUrl: rawUrl ?? (rawQr != null && rawQr.isNotEmpty ? buildQrImageUrl(rawQr) : null),
-      qrImageUrlFallback: rawFallback ??
-          (rawQr != null && rawQr.isNotEmpty ? buildQrImageFallbackUrl(rawQr) : null),
+      qrImageUrl:
+          rawUrl ??
+          (rawQr != null && rawQr.isNotEmpty ? buildQrImageUrl(rawQr) : null),
+      qrImageUrlFallback:
+          rawFallback ??
+          (rawQr != null && rawQr.isNotEmpty
+              ? buildQrImageFallbackUrl(rawQr)
+              : null),
       bakongAccountId: map['bakongAccountId'] as String?,
       merchantName: map['merchantName'] as String?,
       createdAt: map['createdAt'] is DateTime
           ? map['createdAt'] as DateTime
           : DateTime.tryParse(map['createdAt']?.toString() ?? '') ??
-              DateTime.now(),
+                DateTime.now(),
       updatedAt: map['updatedAt'] is DateTime
           ? map['updatedAt'] as DateTime
           : DateTime.tryParse(map['updatedAt']?.toString() ?? '') ??
-              DateTime.now(),
+                DateTime.now(),
     );
+  }
+  static String buildQrImageUrl(String qr) {
+    return 'https://api.qrserver.com/v1/create-qr-code/?size=500x500&margin=2&ecc=M&data=${Uri.encodeComponent(qr)}';
+  }
+
+  static String buildQrImageFallbackUrl(String qr) {
+    return 'https://quickchart.io/qr?size=500&margin=2&ecLevel=M&text=${Uri.encodeComponent(qr)}';
   }
 
   final String? id;

@@ -9,6 +9,7 @@ import 'package:test/test.dart';
 import '../../routes/index.dart' as route;
 
 class _MockRequestContext extends Mock implements RequestContext {}
+
 class _MockMongoDatabase extends Mock implements MongoDatabase {}
 
 void main() {
@@ -20,7 +21,7 @@ void main() {
 
       when(() => context.read<AppConfig>()).thenReturn(config);
       when(() => context.read<MongoDatabase>()).thenReturn(mongoDb);
-      when(() => mongoDb.checkHealth()).thenAnswer(
+      when(mongoDb.checkHealth).thenAnswer(
         (_) async => {'status': 'mocked', 'database': 'api'},
       );
 

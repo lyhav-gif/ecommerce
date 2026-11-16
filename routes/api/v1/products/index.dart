@@ -5,16 +5,12 @@ import 'package:dart_frog/dart_frog.dart';
 Future<Response> onRequest(RequestContext context) async {
   final controller = context.read<ProductController>();
 
-  switch (context.request.method) {
-    case HttpMethod.get:
-      return controller.getAll(context);
-    case HttpMethod.post:
-      return controller.create(context);
-    default:
-      return Response.json(
+  return switch (context.request.method) {
+    HttpMethod.get => controller.getAll(context),
+    HttpMethod.post => controller.create(context),
+    _ => Response.json(
         statusCode: HttpStatus.methodNotAllowed,
         body: {'success': false, 'error': 'Method not allowed'},
-      );
-  }
+      ),
+  };
 }
-

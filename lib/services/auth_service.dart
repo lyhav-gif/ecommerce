@@ -9,8 +9,8 @@ class AuthService {
   AuthService({
     required MongoDatabase database,
     JwtService? jwtService,
-  })  : _database = database,
-        _jwtService = jwtService ?? JwtService();
+  }) : _database = database,
+       _jwtService = jwtService ?? JwtService();
 
   final MongoDatabase _database;
   final JwtService _jwtService;
@@ -44,7 +44,8 @@ class AuthService {
         'passwordHash': hashPassword(password),
         if (name.trim().isNotEmpty) 'name': name.trim(),
         if (phone != null && phone.trim().isNotEmpty) 'phone': phone.trim(),
-        if (address != null && address.trim().isNotEmpty) 'address': address.trim(),
+        if (address != null && address.trim().isNotEmpty)
+          'address': address.trim(),
         'updatedAt': DateTime.now().toIso8601String(),
       };
       try {
@@ -63,15 +64,15 @@ class AuthService {
       passwordHash: hashPassword(password),
       phone: phone?.trim() ?? '',
       address: address?.trim() ?? 'Street 2004, Phnom Penh, Cambodia',
-      avatarUrl: avatarUrl ??
+      avatarUrl:
+          avatarUrl ??
           'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400',
     );
 
     final map = user.toMap(includeId: false);
     final res = await _database.users.insertOne(map);
-    final insertedId = res.id is ObjectId
-        ? (res.id as ObjectId).toHexString()
-        : res.id?.toString();
+    final insertedId =
+        res.id is ObjectId ? (res.id as ObjectId).oid : res.id?.toString();
 
     return User.fromMap({
       ...map,
@@ -133,8 +134,9 @@ class AuthService {
 
   Future<bool> logout(String token) async {
     await _database.connect();
-    final res =
-        await _database.sessions.deleteMany(where.eq('token', token.trim()));
+    final res = await _database.sessions.deleteMany(
+      where.eq('token', token.trim()),
+    );
     return (res.nRemoved) > 0;
   }
 

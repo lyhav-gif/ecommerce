@@ -19,3 +19,6 @@ build/
 
 # Test related files
 coverage/
+
+# Local database files
+.data/

@@ -13,4 +13,3 @@ Future<Response> onRequest(RequestContext context) async {
   final controller = context.read<PaymentController>();
   return controller.generate(context);
 }
-

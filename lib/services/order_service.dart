@@ -13,10 +13,10 @@ class OrderService {
     required PaymentService paymentService,
     required CartService cartService,
     required AuthService authService,
-  })  : _database = database,
-        _paymentService = paymentService,
-        _cartService = cartService,
-        _authService = authService;
+  }) : _database = database,
+       _paymentService = paymentService,
+       _cartService = cartService,
+       _authService = authService;
 
   final MongoDatabase _database;
   final PaymentService _paymentService;
@@ -36,9 +36,8 @@ class OrderService {
     final user = await _authService.getUserById(userId);
     final customerName = user?.name ?? 'Guest User';
     final customerEmail = user?.email ?? 'customer@example.com';
-    final finalAddress = deliveryAddress ??
-        user?.address ??
-        'Street 2004, Phnom Penh, Cambodia';
+    final finalAddress =
+        deliveryAddress ?? user?.address ?? 'Street 2004, Phnom Penh, Cambodia';
 
     final productDoc = await _findProduct(productId);
     if (productDoc == null) {
@@ -58,7 +57,7 @@ class OrderService {
     );
 
     final subtotal = item.subtotal;
-    double discount = 0.0;
+    double discount = 0;
     if (promoCode != null && promoCode.trim().isNotEmpty) {
       final code = promoCode.trim().toUpperCase();
       if (code == 'DISCOUNT10' || code == 'PROMO10') {
@@ -72,9 +71,10 @@ class OrderService {
     String? khqr;
     String? md5;
     String? qrImageUrl;
-    String paymentStatus = 'PENDING';
+    var paymentStatus = 'PENDING';
 
-    final isDigital = paymentMethod.toLowerCase() == 'digital_payment' ||
+    final isDigital =
+        paymentMethod.toLowerCase() == 'digital_payment' ||
         paymentMethod.toLowerCase() == 'khqr';
 
     if (isDigital) {
@@ -105,13 +105,11 @@ class OrderService {
       customerEmail: customerEmail,
       items: [item],
       subtotal: subtotal,
-      shippingFee: 0.0,
       discount: discount,
       totalAmount: totalAmount,
       currency: product.currency,
       paymentMethod: isDigital ? 'digital_payment' : 'cash_on_delivery',
       paymentStatus: paymentStatus,
-      orderStatus: 'PLACED',
       deliveryAddress: finalAddress,
       khqr: khqr,
       md5: md5,
@@ -120,9 +118,8 @@ class OrderService {
 
     final map = order.toMap(includeId: false);
     final res = await _database.orders.insertOne(map);
-    final insertedId = res.id is ObjectId
-        ? (res.id as ObjectId).toHexString()
-        : res.id?.toString();
+    final insertedId =
+        res.id is ObjectId ? (res.id as ObjectId).oid : res.id?.toString();
 
     return Order.fromMap({
       ...map,
@@ -141,9 +138,8 @@ class OrderService {
     final user = await _authService.getUserById(userId);
     final customerName = user?.name ?? 'Guest User';
     final customerEmail = user?.email ?? 'customer@example.com';
-    final finalAddress = deliveryAddress ??
-        user?.address ??
-        'Street 2004, Phnom Penh, Cambodia';
+    final finalAddress =
+        deliveryAddress ?? user?.address ?? 'Street 2004, Phnom Penh, Cambodia';
 
     var cart = await _cartService.getCart(userId);
 
@@ -170,14 +166,15 @@ class OrderService {
         await _cartService.addToCart(
           userId,
           productId: auraDoc['_id']?.toString() ?? 'Aura Cream 1+1',
-          quantity: 1,
         );
         cart = await _cartService.getCart(userId);
       }
     }
 
     if (cart.items.isEmpty) {
-      throw Exception('Shopping cart is empty. Please add items to your cart first.');
+      throw Exception(
+        'Shopping cart is empty. Please add items to your cart first.',
+      );
     }
 
     if (promoCode != null && promoCode.trim().isNotEmpty) {
@@ -191,17 +188,19 @@ class OrderService {
     final discount = updatedCart.discount;
     final shippingFee = updatedCart.shippingFee;
     final totalAmount = updatedCart.total;
-    final currency =
-        updatedCart.items.isNotEmpty ? updatedCart.items.first.currency : 'USD';
+    final currency = updatedCart.items.isNotEmpty
+        ? updatedCart.items.first.currency
+        : 'USD';
 
     final orderNumber = 'ORD-${DateTime.now().millisecondsSinceEpoch}';
 
     String? khqr;
     String? md5;
     String? qrImageUrl;
-    String paymentStatus = 'PENDING';
+    var paymentStatus = 'PENDING';
 
-    final isDigital = paymentMethod.toLowerCase() == 'digital_payment' ||
+    final isDigital =
+        paymentMethod.toLowerCase() == 'digital_payment' ||
         paymentMethod.toLowerCase() == 'khqr';
 
     if (isDigital) {
@@ -238,7 +237,6 @@ class OrderService {
       currency: currency,
       paymentMethod: isDigital ? 'digital_payment' : 'cash_on_delivery',
       paymentStatus: paymentStatus,
-      orderStatus: 'PLACED',
       deliveryAddress: finalAddress,
       khqr: khqr,
       md5: md5,
@@ -247,9 +245,8 @@ class OrderService {
 
     final map = order.toMap(includeId: false);
     final res = await _database.orders.insertOne(map);
-    final insertedId = res.id is ObjectId
-        ? (res.id as ObjectId).toHexString()
-        : res.id?.toString();
+    final insertedId =
+        res.id is ObjectId ? (res.id as ObjectId).oid : res.id?.toString();
 
     // Clear user cart after checkout
     await _cartService.clearCart(userId);
@@ -279,7 +276,9 @@ class OrderService {
       if (doc != null) return Order.fromMap(doc);
     } catch (_) {}
 
-    final doc2 = await _database.orders.findOne(where.eq('orderNumber', orderId));
+    final doc2 = await _database.orders.findOne(
+      where.eq('orderNumber', orderId),
+    );
     if (doc2 != null) return Order.fromMap(doc2);
 
     final doc3 = await _database.orders.findOne(where.eq('_id', orderId));
@@ -291,7 +290,7 @@ class OrderService {
   Future<Map<String, dynamic>?> _findProduct(String id) async {
     final trimmed = id.trim();
     if (trimmed.isEmpty) {
-      return await _database.products.findOne();
+      return _database.products.findOne();
     }
 
     if (RegExp(r'^[0-9a-fA-F]{24}$').hasMatch(trimmed)) {
@@ -320,7 +319,6 @@ class OrderService {
     if (doc5 != null) return doc5;
 
     // Fallback: return any available product in catalog
-    return await _database.products.findOne();
+    return _database.products.findOne();
   }
 }
-

@@ -11,7 +11,7 @@ class JwtException implements Exception {
 
 class JwtService {
   JwtService({String? secret})
-      : _secret = secret ?? 'meaw_ecommerce_jwt_secret_key_2026_super_secure';
+    : _secret = secret ?? 'meaw_ecommerce_jwt_secret_key_2026_super_secure';
 
   final String _secret;
 
@@ -21,8 +21,10 @@ class JwtService {
 
   static List<int> _base64UrlDecode(String str) {
     var normalized = str.replaceAll('-', '+').replaceAll('_', '/');
-    while (normalized.length % 4 != 0) {
-      normalized += '=';
+    final remainder = normalized.length % 4;
+    if (remainder > 0) {
+      normalized =
+          normalized.padRight(normalized.length + (4 - remainder), '=');
     }
     return base64.decode(normalized);
   }
@@ -52,10 +54,8 @@ class JwtService {
       if (extraClaims != null) ...extraClaims,
     };
 
-    final headerEncoded =
-        _base64UrlEncode(utf8.encode(jsonEncode(header)));
-    final payloadEncoded =
-        _base64UrlEncode(utf8.encode(jsonEncode(payload)));
+    final headerEncoded = _base64UrlEncode(utf8.encode(jsonEncode(header)));
+    final payloadEncoded = _base64UrlEncode(utf8.encode(jsonEncode(payload)));
 
     final message = '$headerEncoded.$payloadEncoded';
     final hmac = Hmac(sha256, utf8.encode(_secret));
@@ -110,4 +110,3 @@ class JwtService {
     }
   }
 }
-

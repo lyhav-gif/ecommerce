@@ -19,8 +19,7 @@ class KhqrResult {
 class KhqrHelper {
   static const String verifiedStaticKhrQr =
       '00020101021129210017lyhav_voeurn@bkrt5204599953031165802KH5912LYHAV VOEURN6010Phnom Penh62150211855676878066304C9CA';
-  static const String verifiedStaticKhrMd5 =
-      '1039423af4af31a78945b40a87638134';
+  static const String verifiedStaticKhrMd5 = '1039423af4af31a78945b40a87638134';
   static const String verifiedQrImageUrl =
       'https://api.qrserver.com/v1/create-qr-code/?size=500x500&margin=2&ecc=M&data=00020101021129210017lyhav_voeurn%40bkrt5204599953031165802KH5912LYHAV%20VOEURN6010Phnom%20Penh62150211855676878066304C9CA';
   static const String verifiedQrImageUrlFallback =
@@ -32,13 +31,13 @@ class KhqrHelper {
   }
 
   static String calculateCrc16(String payload) {
-    int crc = 0xFFFF;
-    const int polynomial = 0x1021;
+    var crc = 0xFFFF;
+    const polynomial = 0x1021;
     final bytes = utf8.encode(payload);
 
     for (final b in bytes) {
-      crc ^= (b << 8);
-      for (int i = 0; i < 8; i++) {
+      crc ^= b << 8;
+      for (var i = 0; i < 8; i++) {
         if ((crc & 0x8000) != 0) {
           crc = ((crc << 1) ^ polynomial) & 0xFFFF;
         } else {
@@ -98,7 +97,9 @@ class KhqrHelper {
     if (isDynamic) {
       String amountStr;
       if (currency == KhqrCurrency.khr) {
-        amountStr = amount % 1 == 0 ? amount.toInt().toString() : amount.toString();
+        amountStr = amount % 1 == 0
+            ? amount.toInt().toString()
+            : amount.toString();
       } else {
         amountStr = amount.toStringAsFixed(2);
       }
@@ -106,20 +107,26 @@ class KhqrHelper {
     }
 
     // 58: Country Code (KH)
-    final country = (countryCode != null && countryCode.isNotEmpty) ? countryCode : 'KH';
+    final country = (countryCode != null && countryCode.isNotEmpty)
+        ? countryCode
+        : 'KH';
     buffer.write(formatTlv('58', country));
 
     // 59: Merchant Name
     buffer.write(formatTlv('59', merchantName));
 
     // 60: Merchant City
-    final city = (merchantCity != null && merchantCity.isNotEmpty) ? merchantCity : 'Phnom Penh';
+    final city = (merchantCity != null && merchantCity.isNotEmpty)
+        ? merchantCity
+        : 'Phnom Penh';
     buffer.write(formatTlv('60', city));
 
     // 62: Additional Data Field Template
     final tag62Buffer = StringBuffer();
     if (billNumber != null && billNumber.isNotEmpty) {
-      final safeBill = billNumber.length > 25 ? billNumber.substring(0, 25) : billNumber;
+      final safeBill = billNumber.length > 25
+          ? billNumber.substring(0, 25)
+          : billNumber;
       tag62Buffer.write(formatTlv('01', safeBill));
     }
     if (mobileNumber != null && mobileNumber.isNotEmpty) {
@@ -143,7 +150,7 @@ class KhqrHelper {
     }
 
     // 63: CRC placeholder
-    final payloadWithoutCrc = '${buffer.toString()}6304';
+    final payloadWithoutCrc = '${buffer}6304';
     final crc = calculateCrc16(payloadWithoutCrc);
     final fullQr = '$payloadWithoutCrc$crc';
 

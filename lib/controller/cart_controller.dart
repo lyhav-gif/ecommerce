@@ -8,8 +8,8 @@ class CartController {
   CartController({
     required CartService cartService,
     required AuthService authService,
-  })  : _cartService = cartService,
-        _authService = authService;
+  }) : _cartService = cartService,
+       _authService = authService;
 
   final CartService _cartService;
   final AuthService _authService;
@@ -18,7 +18,8 @@ class CartController {
     RequestContext context, {
     Map<String, dynamic>? bodyJson,
   }) async {
-    final authHeader = context.request.headers['authorization'] ??
+    final authHeader =
+        context.request.headers['authorization'] ??
         context.request.headers['Authorization'];
     if (authHeader != null && authHeader.startsWith('Bearer ')) {
       final token = authHeader.substring(7).trim();
@@ -82,7 +83,10 @@ class CartController {
       if (productId == null || productId.trim().isEmpty) {
         return Response.json(
           statusCode: HttpStatus.badRequest,
-          body: {'success': false, 'error': 'productId is required to add product to bag'},
+          body: {
+            'success': false,
+            'error': 'productId is required to add product to bag',
+          },
         );
       }
 
@@ -94,7 +98,6 @@ class CartController {
       );
 
       return Response.json(
-        statusCode: HttpStatus.ok,
         body: {
           'success': true,
           'message': 'Product added to bag successfully',
@@ -104,7 +107,10 @@ class CartController {
     } catch (e) {
       return Response.json(
         statusCode: HttpStatus.badRequest,
-        body: {'success': false, 'error': e.toString().replaceAll('Exception: ', '')},
+        body: {
+          'success': false,
+          'error': e.toString().replaceAll('Exception: ', ''),
+        },
       );
     }
   }
@@ -249,9 +255,11 @@ class CartController {
     } catch (e) {
       return Response.json(
         statusCode: HttpStatus.badRequest,
-        body: {'success': false, 'error': e.toString().replaceAll('Exception: ', '')},
+        body: {
+          'success': false,
+          'error': e.toString().replaceAll('Exception: ', ''),
+        },
       );
     }
   }
 }
-

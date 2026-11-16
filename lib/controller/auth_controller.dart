@@ -6,12 +6,13 @@ import 'package:dart_frog/dart_frog.dart';
 
 class AuthController {
   AuthController({required AuthService authService})
-      : _authService = authService;
+    : _authService = authService;
 
   final AuthService _authService;
 
   String? _extractToken(RequestContext context) {
-    final authHeader = context.request.headers['authorization'] ??
+    final authHeader =
+        context.request.headers['authorization'] ??
         context.request.headers['Authorization'];
     if (authHeader != null && authHeader.startsWith('Bearer ')) {
       return authHeader.substring(7).trim();
@@ -73,7 +74,6 @@ class AuthController {
       );
 
       return Response.json(
-        statusCode: HttpStatus.ok,
         body: {
           'success': true,
           'message': 'Account ready and authenticated',
@@ -144,7 +144,7 @@ class AuthController {
 
   Future<Response> logout(RequestContext context) async {
     try {
-      String? token = _extractToken(context);
+      var token = _extractToken(context);
       if (token == null || token.isEmpty) {
         try {
           final body = await context.request.body();
@@ -258,4 +258,3 @@ class AuthController {
     }
   }
 }
-

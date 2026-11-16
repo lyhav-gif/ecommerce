@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:api/config/app_config.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
@@ -39,9 +40,11 @@ class MongoDatabase {
       final uri = _config.fullMongoUri;
       _db = await Db.create(uri);
       await _db!.open().timeout(const Duration(seconds: 4));
-      print('[MongoDB] Connected successfully to ${_config.mongodbDatabase}');
+      stdout.writeln(
+        '[MongoDB] Connected successfully to ${_config.mongodbDatabase}',
+      );
     } catch (e) {
-      print('[MongoDB] Connection failed: $e');
+      stderr.writeln('[MongoDB] Connection failed: $e');
       rethrow;
     } finally {
       _isConnecting = false;
@@ -52,7 +55,7 @@ class MongoDatabase {
     if (_db != null && _db!.isConnected) {
       await _db!.close();
       _db = null;
-      print('[MongoDB] Connection closed.');
+      stdout.writeln('[MongoDB] Connection closed.');
     }
   }
 
@@ -77,4 +80,3 @@ class MongoDatabase {
     }
   }
 }
-

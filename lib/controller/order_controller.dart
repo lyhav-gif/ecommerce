@@ -8,8 +8,8 @@ class OrderController {
   OrderController({
     required OrderService orderService,
     required AuthService authService,
-  })  : _orderService = orderService,
-        _authService = authService;
+  }) : _orderService = orderService,
+       _authService = authService;
 
   final OrderService _orderService;
   final AuthService _authService;
@@ -18,7 +18,8 @@ class OrderController {
     RequestContext context, {
     Map<String, dynamic>? bodyJson,
   }) async {
-    final authHeader = context.request.headers['authorization'] ??
+    final authHeader =
+        context.request.headers['authorization'] ??
         context.request.headers['Authorization'];
     if (authHeader != null && authHeader.startsWith('Bearer ')) {
       final token = authHeader.substring(7).trim();
@@ -67,7 +68,10 @@ class OrderController {
       if (productId == null || productId.trim().isEmpty) {
         return Response.json(
           statusCode: HttpStatus.badRequest,
-          body: {'success': false, 'error': 'productId is required for Buy Now'},
+          body: {
+            'success': false,
+            'error': 'productId is required for Buy Now',
+          },
         );
       }
 
@@ -92,14 +96,17 @@ class OrderController {
     } catch (e) {
       return Response.json(
         statusCode: HttpStatus.badRequest,
-        body: {'success': false, 'error': e.toString().replaceAll('Exception: ', '')},
+        body: {
+          'success': false,
+          'error': e.toString().replaceAll('Exception: ', ''),
+        },
       );
     }
   }
 
   Future<Response> checkout(RequestContext context) async {
     try {
-      Map<String, dynamic> json = {};
+      var json = <String, dynamic>{};
       final body = await context.request.body();
       if (body.isNotEmpty) {
         json = jsonDecode(body) as Map<String, dynamic>;
@@ -129,7 +136,10 @@ class OrderController {
     } catch (e) {
       return Response.json(
         statusCode: HttpStatus.badRequest,
-        body: {'success': false, 'error': e.toString().replaceAll('Exception: ', '')},
+        body: {
+          'success': false,
+          'error': e.toString().replaceAll('Exception: ', ''),
+        },
       );
     }
   }
@@ -178,4 +188,3 @@ class OrderController {
     }
   }
 }
-

@@ -47,7 +47,10 @@ void main() {
 
       // Tampered token fails
       final tampered = '${token.substring(0, token.length - 4)}xxxx';
-      expect(() => jwtService.verifyToken(tampered), throwsA(isA<JwtException>()));
+      expect(
+        () => jwtService.verifyToken(tampered),
+        throwsA(isA<JwtException>()),
+      );
 
       // Expired token fails
       final expiredToken = jwtService.generateToken(
@@ -55,7 +58,10 @@ void main() {
         email: 'sethi@gmail.com',
         expiresInSeconds: -10, // already expired
       );
-      expect(() => jwtService.verifyToken(expiredToken), throwsA(isA<JwtException>()));
+      expect(
+        () => jwtService.verifyToken(expiredToken),
+        throwsA(isA<JwtException>()),
+      );
     });
   });
 
@@ -63,12 +69,8 @@ void main() {
     test('Product model supports Figma fields', () {
       final product = Product(
         name: 'Aura Cream 1+1',
-        category: 'Beauty',
         brand: 'GOODY BLESSED MOON',
-        price: 40.0,
-        currency: 'USD',
-        rating: 4.9,
-        reviewCount: 128,
+        price: 40,
         tag: '1+1 FREE',
       );
 
@@ -83,9 +85,7 @@ void main() {
     test('Product model includes embedded KHQR for direct payments', () {
       final product = Product(
         name: 'Aura Cream 1+1',
-        category: 'Beauty',
-        price: 40.0,
-        currency: 'USD',
+        price: 40,
         khqr: KhqrHelper.verifiedStaticKhrQr,
         md5: KhqrHelper.verifiedStaticKhrMd5,
         bakongAccountId: 'lyhav_voeurn@bkrt',
@@ -96,7 +96,10 @@ void main() {
       expect(json['khqr'], equals(KhqrHelper.verifiedStaticKhrQr));
       expect(json['md5'], equals('1039423af4af31a78945b40a87638134'));
       expect(json['qrImageUrl'], equals(KhqrHelper.verifiedQrImageUrl));
-      expect(json['qrImageUrlFallback'], equals(KhqrHelper.verifiedQrImageUrlFallback));
+      expect(
+        json['qrImageUrlFallback'],
+        equals(KhqrHelper.verifiedQrImageUrlFallback),
+      );
       expect(json['bakongAccountId'], equals('lyhav_voeurn@bkrt'));
       expect(json['merchantName'], equals('LYHAV VOEURN'));
     });
@@ -107,9 +110,7 @@ void main() {
       final item1 = CartItem(
         productId: 'prod_1',
         name: 'Aura Cream 1+1',
-        category: 'Beauty',
-        price: 40.0,
-        quantity: 1,
+        price: 40,
       );
 
       expect(item1.subtotal, equals(40.0));
@@ -117,8 +118,7 @@ void main() {
       final cart = Cart(
         userId: 'user_123',
         items: [item1],
-        discount: 10.0,
-        shippingFee: 0.0,
+        discount: 10,
       );
 
       expect(cart.totalItemCount, equals(1));
@@ -141,15 +141,11 @@ void main() {
           CartItem(
             productId: 'prod_1',
             name: 'Aura Cream 1+1',
-            price: 40.0,
-            quantity: 1,
-          )
+            price: 40,
+          ),
         ],
-        subtotal: 40.0,
-        totalAmount: 40.0,
-        currency: 'USD',
-        paymentMethod: 'digital_payment',
-        paymentStatus: 'PENDING',
+        subtotal: 40,
+        totalAmount: 40,
         khqr: '00020101...',
         md5: '1039423af4af31a78945b40a87638134',
         qrImageUrl: 'https://api.qrserver.com/...',
@@ -170,7 +166,7 @@ void main() {
         bakongAccountId: 'lyhav_voeurn@bkrt',
         merchantName: 'LYHAV VOEURN',
         currency: KhqrCurrency.usd,
-        amount: 40.0,
+        amount: 40,
         billNumber: 'ORD-123456',
         storeLabel: 'MEAW Store',
         terminalLabel: 'Online Web',
@@ -179,7 +175,10 @@ void main() {
       );
 
       expect(resUsd.qr, startsWith('000201'));
-      expect(resUsd.qr, contains('29210017lyhav_voeurn@bkrt')); // Verified Bakong Account Tag 29
+      expect(
+        resUsd.qr,
+        contains('29210017lyhav_voeurn@bkrt'),
+      ); // Verified Bakong Account Tag 29
       expect(resUsd.qr, contains('5303840')); // Tag 53: USD (840)
       expect(resUsd.qr, contains('540540.00')); // Tag 54: 40.00 (2 decimals)
       expect(resUsd.qr, contains('LYHAV VOEURN'));
@@ -197,17 +196,19 @@ void main() {
       final payment = Payment(
         qr: KhqrHelper.verifiedStaticKhrQr,
         md5: KhqrHelper.verifiedStaticKhrMd5,
-        amount: 40.0,
+        amount: 40,
         currency: 'USD',
         bakongAccountId: 'lyhav_voeurn@bkrt',
         merchantName: 'LYHAV VOEURN',
       );
 
       expect(payment.qrImageUrl, equals(KhqrHelper.verifiedQrImageUrl));
-      expect(payment.qrImageUrlFallback, equals(KhqrHelper.verifiedQrImageUrlFallback));
+      expect(
+        payment.qrImageUrlFallback,
+        equals(KhqrHelper.verifiedQrImageUrlFallback),
+      );
       expect(payment.md5, equals('1039423af4af31a78945b40a87638134'));
       expect(payment.qr, startsWith('00020101021129210017lyhav_voeurn@bkrt'));
     });
   });
 }
-

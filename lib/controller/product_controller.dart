@@ -6,7 +6,7 @@ import 'package:dart_frog/dart_frog.dart';
 
 class ProductController {
   ProductController({required ProductService productService})
-      : _productService = productService;
+    : _productService = productService;
 
   final ProductService _productService;
 
@@ -129,7 +129,10 @@ class ProductController {
       if (updated == null) {
         return Response.json(
           statusCode: HttpStatus.notFound,
-          body: {'success': false, 'error': 'Product not found or update failed'},
+          body: {
+            'success': false,
+            'error': 'Product not found or update failed',
+          },
         );
       }
 
@@ -154,7 +157,10 @@ class ProductController {
       if (!deleted) {
         return Response.json(
           statusCode: HttpStatus.notFound,
-          body: {'success': false, 'error': 'Product not found or delete failed'},
+          body: {
+            'success': false,
+            'error': 'Product not found or delete failed',
+          },
         );
       }
 

@@ -7,8 +7,8 @@ class ProductService {
   ProductService({
     required MongoDatabase database,
     BakongService? bakongService,
-  })  : _database = database,
-        _bakongService = bakongService ?? BakongService();
+  }) : _database = database,
+       _bakongService = bakongService ?? BakongService();
 
   final MongoDatabase _database;
   final BakongService _bakongService;
@@ -31,13 +31,15 @@ class ProductService {
   }
 
   String _makeBillNumber(String name) {
-    final clean = name.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '').toUpperCase();
+    final clean = name.replaceAll(RegExp('[^a-zA-Z0-9]'), '').toUpperCase();
     final short = clean.length > 8 ? clean.substring(0, 8) : clean;
     return 'INV-$short';
   }
 
-  Future<List<Product>> getAllProducts(
-      {String? category, String? search}) async {
+  Future<List<Product>> getAllProducts({
+    String? category,
+    String? search,
+  }) async {
     await _database.connect();
 
     var selector = where;
@@ -62,14 +64,20 @@ class ProductService {
             await _database.products.updateOne(
               where.id(ObjectId.fromHexString(prod.id!)),
               modify
-                  .set('khqr', prod.khqr!)
-                  .set('md5', prod.md5!)
-                  .set('qrImageUrl', prod.qrImageUrl!)
-                  .set('qrImageUrlFallback', prod.qrImageUrlFallback!)
-                  .set('bakongAccountId',
-                      prod.bakongAccountId ?? _bakongService.config.bakongAccountId)
-                  .set('merchantName',
-                      prod.merchantName ?? _bakongService.config.bakongMerchantName),
+                  .set('khqr', prod.khqr)
+                  .set('md5', prod.md5)
+                  .set('qrImageUrl', prod.qrImageUrl)
+                  .set('qrImageUrlFallback', prod.qrImageUrlFallback)
+                  .set(
+                    'bakongAccountId',
+                    prod.bakongAccountId ??
+                        _bakongService.config.bakongAccountId,
+                  )
+                  .set(
+                    'merchantName',
+                    prod.merchantName ??
+                        _bakongService.config.bakongMerchantName,
+                  ),
             );
           } catch (_) {}
         }
@@ -85,8 +93,9 @@ class ProductService {
     Product? prod;
 
     try {
-      final doc = await _database.products
-          .findOne(where.id(ObjectId.fromHexString(id)));
+      final doc = await _database.products.findOne(
+        where.id(ObjectId.fromHexString(id)),
+      );
       if (doc != null) prod = Product.fromMap(doc);
     } catch (_) {}
 
@@ -108,14 +117,20 @@ class ProductService {
             await _database.products.updateOne(
               where.id(ObjectId.fromHexString(prod.id!)),
               modify
-                  .set('khqr', prod.khqr!)
-                  .set('md5', prod.md5!)
-                  .set('qrImageUrl', prod.qrImageUrl!)
-                  .set('qrImageUrlFallback', prod.qrImageUrlFallback!)
-                  .set('bakongAccountId',
-                      prod.bakongAccountId ?? _bakongService.config.bakongAccountId)
-                  .set('merchantName',
-                      prod.merchantName ?? _bakongService.config.bakongMerchantName),
+                  .set('khqr', prod.khqr)
+                  .set('md5', prod.md5)
+                  .set('qrImageUrl', prod.qrImageUrl)
+                  .set('qrImageUrlFallback', prod.qrImageUrlFallback)
+                  .set(
+                    'bakongAccountId',
+                    prod.bakongAccountId ??
+                        _bakongService.config.bakongAccountId,
+                  )
+                  .set(
+                    'merchantName',
+                    prod.merchantName ??
+                        _bakongService.config.bakongMerchantName,
+                  ),
             );
           } catch (_) {}
         }
@@ -136,26 +151,31 @@ class ProductService {
 
     final map = productToSave.toMap(includeId: false);
     final res = await _database.products.insertOne(map);
-    final insertedId = res.id is ObjectId
-        ? (res.id as ObjectId).toHexString()
-        : res.id?.toString();
+    final insertedId =
+        res.id is ObjectId ? (res.id as ObjectId).oid : res.id?.toString();
 
     // Register pre-generated payment record in MongoDB payments collection
     try {
       if (productToSave.md5 != null && productToSave.khqr != null) {
         await _database.payments.updateOne(
-          where.eq('md5', productToSave.md5!),
+          where.eq('md5', productToSave.md5),
           modify
-              .set('qr', productToSave.khqr!)
-              .set('md5', productToSave.md5!)
+              .set('qr', productToSave.khqr)
+              .set('md5', productToSave.md5)
               .set('qrImageUrl', productToSave.qrImageUrl ?? '')
               .set('qrImageUrlFallback', productToSave.qrImageUrlFallback ?? '')
               .set('amount', productToSave.price)
               .set('currency', productToSave.currency)
-              .set('bakongAccountId',
-                  productToSave.bakongAccountId ?? _bakongService.config.bakongAccountId)
-              .set('merchantName',
-                  productToSave.merchantName ?? _bakongService.config.bakongMerchantName)
+              .set(
+                'bakongAccountId',
+                productToSave.bakongAccountId ??
+                    _bakongService.config.bakongAccountId,
+              )
+              .set(
+                'merchantName',
+                productToSave.merchantName ??
+                    _bakongService.config.bakongMerchantName,
+              )
               .set('productId', insertedId)
               .set('billNumber', _makeBillNumber(productToSave.name))
               .set('status', 'PENDING')
@@ -173,7 +193,9 @@ class ProductService {
   }
 
   Future<Product?> updateProduct(
-      String id, Map<String, dynamic> updates) async {
+    String id,
+    Map<String, dynamic> updates,
+  ) async {
     await _database.connect();
     try {
       final objectId = ObjectId.fromHexString(id);
@@ -213,51 +235,37 @@ class ProductService {
         name: 'Aura Cream 1+1',
         description:
             '1+1 FREE on Blessed Moon Aura Cream. Deep hydration and glow effect.',
-        price: 40.0,
-        currency: 'USD',
+        price: 40,
         imageUrl:
             'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=500',
-        category: 'Beauty',
         brand: 'GOODY BLESSED MOON',
-        rating: 4.9,
-        reviewCount: 128,
         tag: '1+1 FREE',
-        isFlash: false,
       ),
       Product(
         name: 'Linin Body Cream',
         description:
             'Glow should be weightless. Instant skin nourishing body cream.',
-        price: 24.0,
-        currency: 'USD',
+        price: 24,
         imageUrl:
             'https://images.unsplash.com/photo-1608248597359-5283b05fca1c?w=500',
-        category: 'Beauty',
         brand: 'LININ',
-        rating: 4.9,
-        reviewCount: 128,
         tag: 'FLASH',
         isFlash: true,
       ),
       Product(
         name: 'WEYOUNG Facial Essence',
         description: 'Natural clarifying toner and essence for radiant skin.',
-        price: 30.0,
-        currency: 'USD',
+        price: 30,
         imageUrl:
             'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=500',
-        category: 'Beauty',
         brand: 'WEYOUNG',
-        rating: 4.9,
-        reviewCount: 128,
         tag: 'FLASH',
         isFlash: true,
       ),
       Product(
         name: 'Classic Trench Coat',
         description: 'Premium tailored cotton trench coat with sleek design.',
-        price: 85.0,
-        currency: 'USD',
+        price: 85,
         imageUrl:
             'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=500',
         category: 'Fashion',
@@ -265,27 +273,22 @@ class ProductService {
         rating: 4.8,
         reviewCount: 64,
         tag: 'TRENDING',
-        isFlash: false,
       ),
       Product(
         name: 'Wireless Noise-Cancelling Headphones',
         description: 'Charming melody, all-day comfort with active ANC.',
-        price: 120.0,
-        currency: 'USD',
+        price: 120,
         imageUrl:
             'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500',
         category: 'Electronics',
         brand: 'SONY',
-        rating: 4.9,
         reviewCount: 310,
         tag: 'TOP',
-        isFlash: false,
       ),
       Product(
         name: 'Minimalist Chrono Watch',
         description: 'Sapphire glass dial with genuine leather strap.',
-        price: 95.0,
-        currency: 'USD',
+        price: 95,
         imageUrl:
             'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500',
         category: 'Watches',
@@ -293,20 +296,20 @@ class ProductService {
         rating: 4.7,
         reviewCount: 88,
         tag: 'NEW',
-        isFlash: false,
       ),
     ];
 
     for (final item in figmaItems) {
-      final existing =
-          await _database.products.findOne(where.eq('name', item.name));
+      final existing = await _database.products.findOne(
+        where.eq('name', item.name),
+      );
       if (existing == null) {
         await createProduct(item);
       } else {
         // Upgrade existing product with the verified Bakong KHQR
         final withQr = generateProductKhqr(Product.fromMap(existing));
         final docId = existing['_id'] is ObjectId
-            ? (existing['_id'] as ObjectId).toHexString()
+            ? (existing['_id'] as ObjectId).oid
             : existing['_id'].toString();
 
         await updateProduct(
@@ -323,18 +326,24 @@ class ProductService {
 
         try {
           await _database.payments.updateOne(
-            where.eq('md5', withQr.md5!),
+            where.eq('md5', withQr.md5),
             modify
-                .set('qr', withQr.khqr!)
-                .set('md5', withQr.md5!)
+                .set('qr', withQr.khqr)
+                .set('md5', withQr.md5)
                 .set('qrImageUrl', withQr.qrImageUrl ?? '')
                 .set('qrImageUrlFallback', withQr.qrImageUrlFallback ?? '')
                 .set('amount', withQr.price)
                 .set('currency', withQr.currency)
-                .set('bakongAccountId',
-                    withQr.bakongAccountId ?? _bakongService.config.bakongAccountId)
-                .set('merchantName',
-                    withQr.merchantName ?? _bakongService.config.bakongMerchantName)
+                .set(
+                  'bakongAccountId',
+                  withQr.bakongAccountId ??
+                      _bakongService.config.bakongAccountId,
+                )
+                .set(
+                  'merchantName',
+                  withQr.merchantName ??
+                      _bakongService.config.bakongMerchantName,
+                )
                 .set('productId', docId)
                 .set('billNumber', _makeBillNumber(withQr.name))
                 .set('status', 'PENDING')

@@ -2,23 +2,24 @@ import 'package:mongo_dart/mongo_dart.dart';
 
 class User {
   User({
-    this.id,
     required this.name,
     required this.email,
     required this.passwordHash,
+    this.id,
     this.phone = '',
-    this.avatarUrl = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400',
+    this.avatarUrl =
+        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400',
     this.address = 'Street 2004, Phnom Penh, Cambodia',
     DateTime? createdAt,
     DateTime? updatedAt,
-  })  : createdAt = createdAt ?? DateTime.now(),
-        updatedAt = updatedAt ?? DateTime.now();
+  }) : createdAt = createdAt ?? DateTime.now(),
+       updatedAt = updatedAt ?? DateTime.now();
 
   factory User.fromMap(Map<String, dynamic> map) {
     String? idStr;
     if (map['_id'] != null) {
       if (map['_id'] is ObjectId) {
-        idStr = (map['_id'] as ObjectId).toHexString();
+        idStr = (map['_id'] as ObjectId).oid;
       } else {
         idStr = map['_id'].toString();
       }
@@ -30,17 +31,18 @@ class User {
       email: map['email'] as String? ?? '',
       passwordHash: map['passwordHash'] as String? ?? '',
       phone: map['phone'] as String? ?? '',
-      avatarUrl: map['avatarUrl'] as String? ??
+      avatarUrl:
+          map['avatarUrl'] as String? ??
           'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400',
       address: map['address'] as String? ?? 'Street 2004, Phnom Penh, Cambodia',
       createdAt: map['createdAt'] is DateTime
           ? map['createdAt'] as DateTime
           : DateTime.tryParse(map['createdAt']?.toString() ?? '') ??
-              DateTime.now(),
+                DateTime.now(),
       updatedAt: map['updatedAt'] is DateTime
           ? map['updatedAt'] as DateTime
           : DateTime.tryParse(map['updatedAt']?.toString() ?? '') ??
-              DateTime.now(),
+                DateTime.now(),
     );
   }
 
@@ -86,4 +88,3 @@ class User {
     };
   }
 }
-

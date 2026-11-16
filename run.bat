@@ -1,0 +1,6 @@
+@echo off
+echo Freeing ports 8181 and 8080 if occupied...
+for /f "tokens=5" %%a in ('netstat -aon ^| findstr ":8181 "') do taskkill /f /pid %%a >nul 2>&1
+for /f "tokens=5" %%a in ('netstat -aon ^| findstr ":8080 "') do taskkill /f /pid %%a >nul 2>&1
+echo Starting Dart Frog dev server...
+dart_frog dev %*

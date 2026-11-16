@@ -4,8 +4,8 @@ class CartItem {
   CartItem({
     required this.productId,
     required this.name,
-    this.category = 'Beauty',
     required this.price,
+    this.category = 'Beauty',
     this.currency = 'USD',
     this.quantity = 1,
     this.imageUrl = '',
@@ -82,21 +82,21 @@ class CartItem {
 
 class Cart {
   Cart({
-    this.id,
     required this.userId,
+    this.id,
     List<CartItem>? items,
     this.promoCode,
     this.discount = 0.0,
     this.shippingFee = 0.0,
     DateTime? updatedAt,
-  })  : items = items ?? [],
-        updatedAt = updatedAt ?? DateTime.now();
+  }) : items = items ?? [],
+       updatedAt = updatedAt ?? DateTime.now();
 
   factory Cart.fromMap(Map<String, dynamic> map) {
     String? idStr;
     if (map['_id'] != null) {
       if (map['_id'] is ObjectId) {
-        idStr = (map['_id'] as ObjectId).toHexString();
+        idStr = (map['_id'] as ObjectId).oid;
       } else {
         idStr = map['_id'].toString();
       }
@@ -117,7 +117,7 @@ class Cart {
       updatedAt: map['updatedAt'] is DateTime
           ? map['updatedAt'] as DateTime
           : DateTime.tryParse(map['updatedAt']?.toString() ?? '') ??
-              DateTime.now(),
+                DateTime.now(),
     );
   }
 
@@ -133,7 +133,7 @@ class Cart {
       items.fold<int>(0, (sum, item) => sum + item.quantity);
 
   double get subtotal =>
-      items.fold<double>(0.0, (sum, item) => sum + item.subtotal);
+      items.fold<double>(0, (sum, item) => sum + item.subtotal);
 
   double get total {
     final t = subtotal - discount + shippingFee;
@@ -173,4 +173,3 @@ class Cart {
     };
   }
 }
-
