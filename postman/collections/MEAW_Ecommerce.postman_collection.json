@@ -1,0 +1,1033 @@
+{
+  "info": {
+    "_postman_id": "meaw-ecommerce-figma-collection-2026",
+    "name": "MEAW E-Commerce (Figma Screens) & Bakong KHQR API (JWT Auth)",
+    "description": "Postman Collection for MEAW E-Commerce Backend (Dart Frog + MongoDB + JWT Auth).\nAll requests configured for direct URL: http://localhost:8080 (no {{baseUrl}} needed).\nFeatures:\n1. Sign Up (singin) & Login with HS256 JWT\n2. Figma Product Catalog (Aura Cream, Linin Body Cream, WEYOUNG, etc.)\n3. Add to Bag with real multi-product cart support\n4. Buy Now via http://localhost:8080/api/v1/payments\n5. Scannable Bakong KHQR generation & MD5 verification\nFigma Design: https://www.figma.com/design/rkL3Ge6aEVFJds97XDSOb3/ML-E-Commerce?node-id=283-4802",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "product_id",
+      "value": "Aura Cream 1+1",
+      "type": "string"
+    },
+    {
+      "key": "order_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "last_md5",
+      "value": "1039423af4af31a78945b40a87638134",
+      "type": "string"
+    },
+    {
+      "key": "product_md5",
+      "value": "1039423af4af31a78945b40a87638134",
+      "type": "string"
+    },
+    {
+      "key": "product_khqr",
+      "value": "00020101021129210017lyhav_voeurn@bkrt5204599953031165802KH5912LYHAV VOEURN6010Phnom Penh62150211855676878066304C9CA",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "0. System Health & Web Simulator",
+      "item": [
+        {
+          "name": "1. Server Health & Database Ping",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": [""]
+            }
+          }
+        },
+        {
+          "name": "2. Open Web Mobile Screen Simulator (Figma Flow)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/screens",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["screens"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "1. Screen - Sign Up (singin)",
+      "item": [
+        {
+          "name": "1. Sign Up New User (Roth Sethi)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.token) {",
+                  "    pm.collectionVariables.set('auth_token', json.token);",
+                  "    console.log('Saved JWT auth_token:', json.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Roth Sethi\",\n  \"email\": \"Sethi@gmail.com\",\n  \"password\": \"Password123!\",\n  \"phone\": \"+855 12 345 678\",\n  \"address\": \"Street 2004, Phnom Penh, Cambodia\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/auth/signup",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "auth", "signup"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Screen - Login (JWT)",
+      "item": [
+        {
+          "name": "1. Login with JWT (Sethi@gmail.com)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.token) {",
+                  "    pm.collectionVariables.set('auth_token', json.token);",
+                  "    console.log('Saved JWT auth_token:', json.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"Sethi@gmail.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/auth/login",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "2. Login with Invalid Password (Fail Case)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"Sethi@gmail.com\",\n  \"password\": \"WrongPass\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/auth/login",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Screen - Catalog & Product Details",
+      "item": [
+        {
+          "name": "1. Seed Default Figma Products",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/products/seed",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "products", "seed"]
+            }
+          }
+        },
+        {
+          "name": "2. List All Products (Auto-saves product_id)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.length > 0) {",
+                  "    const aura = json.data.find(p => p.name.includes('Aura Cream')) || json.data[0];",
+                  "    pm.collectionVariables.set('product_id', aura.id || aura.name);",
+                  "    if (aura.md5) pm.collectionVariables.set('product_md5', aura.md5);",
+                  "    if (aura.khqr) pm.collectionVariables.set('product_khqr', aura.khqr);",
+                  "    console.log('Saved product_id:', aura.id || aura.name, 'md5:', aura.md5);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/products",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "products"]
+            }
+          }
+        },
+        {
+          "name": "3. Filter Products by Category (Beauty)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/products?category=Beauty",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "products"],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "Beauty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "4. Get Product Detail (Aura Cream 1+1)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/products/{{product_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "products", "{{product_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Screen - Add to Cart & Shopping Bag",
+      "item": [
+        {
+          "name": "1. Get User Shopping Cart (Screen 3 & 4)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/cart",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "cart"]
+            }
+          }
+        },
+        {
+          "name": "2. Add Item 1 to Bag (Aura Cream 1+1 - $40.00)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"Aura Cream 1+1\",\n  \"quantity\": 1\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/cart/add",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "cart", "add"]
+            }
+          }
+        },
+        {
+          "name": "3. Add Item 2 to Bag (Linin Body Cream - $24.00)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"Linin Body Cream\",\n  \"quantity\": 1\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/cart/add",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "cart", "add"]
+            }
+          }
+        },
+        {
+          "name": "4. Add Item 3 to Bag (WEYOUNG Facial Essence - $30.00)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"WEYOUNG Facial Essence\",\n  \"quantity\": 1\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/cart/add",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "cart", "add"]
+            }
+          }
+        },
+        {
+          "name": "5. View Shopping Cart (Shows All Added Items & Subtotal)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/cart",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "cart"]
+            }
+          }
+        },
+        {
+          "name": "6. Update Item Quantity in Bag (+/-)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"Aura Cream 1+1\",\n  \"quantity\": 2\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/cart/update",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "cart", "update"]
+            }
+          }
+        },
+        {
+          "name": "7. Apply Promo Code (DISCOUNT10)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"promoCode\": \"DISCOUNT10\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/cart/promo",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "cart", "promo"]
+            }
+          }
+        },
+        {
+          "name": "8. Remove Item from Bag (Linin Body Cream)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"Linin Body Cream\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/cart/remove",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "cart", "remove"]
+            }
+          }
+        },
+        {
+          "name": "9. Clear Entire Shopping Cart",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/cart",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "cart"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Screen - Buy Now (Uses /payments Endpoint)",
+      "item": [
+        {
+          "name": "1. Buy Now via /payments (Aura Cream 1+1 - $40.00 USD)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data) {",
+                  "    if (json.data.orderId) pm.collectionVariables.set('order_id', json.data.orderId);",
+                  "    if (json.data.md5) {",
+                  "        pm.collectionVariables.set('last_md5', json.data.md5);",
+                  "        console.log('Saved last_md5 for KHQR scan verification:', json.data.md5);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"Aura Cream 1+1\",\n  \"quantity\": 1,\n  \"paymentMethod\": \"digital_payment\",\n  \"deliveryAddress\": \"Street 2004, Phnom Penh, Cambodia\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/payments",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "payments"]
+            }
+          }
+        },
+        {
+          "name": "2. Buy Now via /payments (Linin Body Cream - $24.00 USD)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.md5) {",
+                  "    pm.collectionVariables.set('last_md5', json.data.md5);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"Linin Body Cream\",\n  \"quantity\": 1,\n  \"paymentMethod\": \"digital_payment\",\n  \"deliveryAddress\": \"Street 2004, Phnom Penh, Cambodia\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/payments",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "payments"]
+            }
+          }
+        },
+        {
+          "name": "3. Buy Now via /payments (WEYOUNG Facial Essence - $30.00 USD)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.md5) {",
+                  "    pm.collectionVariables.set('last_md5', json.data.md5);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"WEYOUNG Facial Essence\",\n  \"quantity\": 1,\n  \"paymentMethod\": \"digital_payment\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/payments",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "payments"]
+            }
+          }
+        },
+        {
+          "name": "4. Buy Now with Direct Amount ($40.00 USD)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.md5) {",
+                  "    pm.collectionVariables.set('last_md5', json.data.md5);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 40.00,\n  \"currency\": \"USD\",\n  \"billNumber\": \"INV-AURA-1001\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/payments",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "payments"]
+            }
+          }
+        },
+        {
+          "name": "5. Buy Now with Cash on Delivery (COD)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"Aura Cream 1+1\",\n  \"quantity\": 1,\n  \"paymentMethod\": \"cash_on_delivery\",\n  \"deliveryAddress\": \"Street 2004, Phnom Penh, Cambodia\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/orders/buy-now",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "orders", "buy-now"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Screen - Proceed to Checkout (Cart to Payment)",
+      "item": [
+        {
+          "name": "1. Checkout Cart via /payments (fromCart: true)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data) {",
+                  "    if (json.data.orderId) pm.collectionVariables.set('order_id', json.data.orderId);",
+                  "    if (json.data.md5) pm.collectionVariables.set('last_md5', json.data.md5);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fromCart\": true,\n  \"paymentMethod\": \"digital_payment\",\n  \"deliveryAddress\": \"Street 2004, Phnom Penh, Cambodia\",\n  \"promoCode\": \"DISCOUNT10\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/payments",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "payments"]
+            }
+          }
+        },
+        {
+          "name": "2. Checkout Cart via /orders/checkout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paymentMethod\": \"digital_payment\",\n  \"deliveryAddress\": \"Street 2004, Phnom Penh, Cambodia\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/orders/checkout",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "orders", "checkout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Screen - Me Profile & Orders",
+      "item": [
+        {
+          "name": "1. Get User Profile (Screen 6 - Roth Sethi)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/auth/me",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "auth", "me"]
+            }
+          }
+        },
+        {
+          "name": "2. Update Profile Information",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Roth Sethi\",\n  \"phone\": \"+855 12 888 999\",\n  \"address\": \"Condo Urban Village, Hun Sen Blvd, Phnom Penh\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/auth/me",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "auth", "me"]
+            }
+          }
+        },
+        {
+          "name": "3. List User Orders (Screen 6 'My Order')",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/orders",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "orders"]
+            }
+          }
+        },
+        {
+          "name": "4. Get Single Order by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/orders/{{order_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "orders", "{{order_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Screen - Logout",
+      "item": [
+        {
+          "name": "1. Logout (Screen 6 'Logout')",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.collectionVariables.set('auth_token', '');",
+                  "console.log('Cleared auth_token upon logout');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{auth_token}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/auth/logout",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "auth", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "9. Bakong KHQR Payments & Verification",
+      "item": [
+        {
+          "name": "1. Generate Dynamic KHQR via /payments (USD)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.md5) {",
+                  "    pm.collectionVariables.set('last_md5', json.data.md5);",
+                  "    console.log('Saved MD5:', json.data.md5);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 40.00,\n  \"currency\": \"USD\",\n  \"billNumber\": \"INV-AURA-1001\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/payments",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "payments"]
+            }
+          }
+        },
+        {
+          "name": "2. Generate KHQR via /payments/generate",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 24.00,\n  \"currency\": \"USD\",\n  \"billNumber\": \"INV-LININ-2001\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/payments/generate",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "payments", "generate"]
+            }
+          }
+        },
+        {
+          "name": "3. Verify Payment Status by MD5 (POST)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"md5\": \"{{last_md5}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/payments/verify",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "payments", "verify"]
+            }
+          }
+        },
+        {
+          "name": "4. Verify Payment Status by MD5 (GET)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/payments/verify?md5={{last_md5}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "payments", "verify"],
+              "query": [
+                {
+                  "key": "md5",
+                  "value": "{{last_md5}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "5. Get Payment by MD5",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/payments/{{last_md5}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "payments", "{{last_md5}}"]
+            }
+          }
+        },
+        {
+          "name": "6. List All Payments in MongoDB",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/payments",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "payments"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

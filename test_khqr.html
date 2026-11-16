@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bakong KHQR - LYHAV VOEURN</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: #f1f5f9; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+    .khqr-card { width: 100%; max-width: 400px; background: white; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); overflow: hidden; text-align: center; }
+    .header { background: #E12229; color: white; padding: 22px 16px; }
+    .header h2 { font-size: 22px; font-weight: 800; letter-spacing: 2px; }
+    .header p { font-size: 13px; opacity: 0.95; margin-top: 4px; font-weight: 500; }
+    .content { padding: 24px 20px; }
+    .merchant-name { font-size: 20px; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 0.5px; }
+    .account-id { font-size: 14px; color: #64748b; margin-top: 4px; font-weight: 500; }
+    .amount-display { margin: 16px 0; font-size: 28px; font-weight: 800; color: #E12229; }
+    .qr-container { background: #fafafa; border: 2px dashed #cbd5e1; border-radius: 20px; padding: 16px; display: inline-block; margin-bottom: 16px; }
+    .qr-container img { width: 240px; height: 240px; display: block; border-radius: 12px; }
+    .controls { display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; flex-wrap: wrap; }
+    .btn { padding: 8px 14px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: 0.15s; }
+    .btn-outline { background: #f8fafc; border: 1.5px solid #cbd5e1; color: #475569; }
+    .btn-outline:hover { background: #f1f5f9; }
+    .btn-outline.active { background: #E12229; color: white; border-color: #E12229; }
+    .payload-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; font-size: 11px; color: #64748b; word-break: break-all; margin-top: 14px; text-align: left; }
+    .verified-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: #16a34a; font-weight: 600; margin-top: 6px; }
+  </style>
+</head>
+<body>
+
+<div class="khqr-card">
+  <div class="header">
+    <h2>KHQR</h2>
+    <p>National Bank of Cambodia • Bakong</p>
+  </div>
+
+  <div class="content">
+    <div class="merchant-name">LYHAV VOEURN</div>
+    <div class="account-id">lyhav_voeurn@bkrt</div>
+    <div class="verified-badge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+      គណនីបានបញ្ជាក់អត្តសញ្ញាណ (Verified)
+    </div>
+
+    <div class="controls" style="margin-top: 18px;">
+      <button class="btn btn-outline active" onclick="showStaticKhr()">Open Amount (KHR)</button>
+      <button class="btn btn-outline" onclick="showStaticUsd()">Open Amount (USD)</button>
+      <button class="btn btn-outline" onclick="showKhr()">1,000 ៛</button>
+      <button class="btn btn-outline" onclick="showUsd()">$1.00 USD</button>
+    </div>
+
+    <div class="amount-display" id="amountDisplay">Enter Amount in App (KHR)</div>
+
+    <div class="qr-container">
+      <img id="qrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=10&data=00020101021129210017lyhav_voeurn%40bkrt5204599953031165802KH5912LYHAV%20VOEURN6010Phnom%20Penh62150211855676878066304C9CA" alt="KHQR Code">
+    </div>
+
+    <div class="payload-box">
+      <strong>MD5:</strong> <span id="md5Display">1039423af4af31a78945b40a87638134</span><br><br>
+      <strong>EMVCo Payload:</strong><br><span id="payloadDisplay">00020101021129210017lyhav_voeurn@bkrt5204599953031165802KH5912LYHAV VOEURN6010Phnom Penh62150211855676878066304C9CA</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  const staticKhrQr = "00020101021129210017lyhav_voeurn@bkrt5204599953031165802KH5912LYHAV VOEURN6010Phnom Penh62150211855676878066304C9CA";
+  const staticKhrMd5 = "1039423af4af31a78945b40a87638134";
+
+  const staticUsdQr = "00020101021129210017lyhav_voeurn@bkrt5204599953038405802KH5912LYHAV VOEURN6010Phnom Penh62150211855676878066304D805";
+  const staticUsdMd5 = "951cf827b08bf4f372655b51cc687b1d";
+
+  const khrQr = "00020101021229210017lyhav_voeurn@bkrt520459995303116540410005802KH5912LYHAV VOEURN6010Phnom Penh62270108INV-100102118556768780663041AC0";
+  const khrMd5 = "c9448d5ad7246d57237e2b7b875a0706";
+
+  const usdQr = "00020101021229210017lyhav_voeurn@bkrt52045999530384054041.005802KH5912LYHAV VOEURN6010Phnom Penh62270108INV-10020211855676878066304FCAB";
+  const usdMd5 = "26dcf360eb18e6b3324a0e3c57828d99";
+
+  function setMode(text, qr, md5, idx) {
+    document.getElementById('amountDisplay').innerText = text;
+    document.getElementById('qrImage').src = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=10&data=" + encodeURIComponent(qr);
+    document.getElementById('md5Display').innerText = md5;
+    document.getElementById('payloadDisplay').innerText = qr;
+    document.querySelectorAll('.btn-outline').forEach((b, i) => {
+      b.classList.toggle('active', i === idx);
+    });
+  }
+
+  function showStaticKhr() { setMode("Enter Amount in App (KHR)", staticKhrQr, staticKhrMd5, 0); }
+  function showStaticUsd() { setMode("Enter Amount in App (USD)", staticUsdQr, staticUsdMd5, 1); }
+  function showKhr() { setMode("1,000 KHR", khrQr, khrMd5, 2); }
+  function showUsd() { setMode("$1.00 USD", usdQr, usdMd5, 3); }
+</script>
+
+</body>
+</html>

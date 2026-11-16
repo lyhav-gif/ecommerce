@@ -1,0 +1,7 @@
+# Use this workspace to collaborate
+workspace:
+  id: 7475f97e-d1b2-41be-a8fc-238bb612a314
+
+localResources:
+  collections:
+    - ../postman_collection.json
